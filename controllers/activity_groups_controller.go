@@ -28,7 +28,7 @@ func GetAllActivityGroups(c *gin.Context) {
 
 // POST /tasks
 // Create new task
-func CreateTask(c *gin.Context) {
+func CreateActivityGroups(c *gin.Context) {
 	// Validate input
 	var input entity.CreateActivityGroupsInput
 	if err := c.ShouldBindJSON(&input); err != nil {
