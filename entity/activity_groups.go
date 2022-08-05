@@ -1,11 +1,14 @@
 package entity
 
+import "time"
+
 type ActivityGroups struct {
-	ID        int    `json:"id"`
-	Title     string `json:"title"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-	Email     string `json:"age"`
+	ID        int       `json:"id" gorm:"primary_key`
+	Title     string    `json:"title"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"json:"updated_at"`
+	Email     string    `json:"email"`
+	Comment   string    `json:"_comment"`
 }
 
 type ActivityGroupsDetailResponse struct {
@@ -20,4 +23,10 @@ type ActivityGroupsListResponse struct {
 	Limit int              `json:"limit"`
 	Skip  int              `json:"skip"`
 	Data  []ActivityGroups `json:data"`
+}
+
+type CreateActivityGroupsInput struct {
+	Title   string `json:"title"`
+	Email   string `json:"email"`
+	Comment string `json:"_comment"`
 }

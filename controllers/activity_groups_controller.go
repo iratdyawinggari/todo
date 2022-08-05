@@ -1,67 +1,114 @@
 package controllers
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	"rest-go-demo/database"
-	"rest-go-demo/entity"
-	"strconv"
+	"time"
+	"todo-app/entity"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
-//GetAllPerson get all person data
-func GetAllPerson(w http.ResponseWriter, r *http.Request) {
-	var persons []entity.Person
-	database.Connector.Find(&persons)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(persons)
+// GET /tasks
+// Get all tasks
+func GetAllActivityGroups(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	var activityGroups []entity.ActivityGroups
+	db.Find(&activityGroups)
+
+	result := entity.ActivityGroupsListResponse{
+		Total: len(activityGroups),
+		Limit: 1000,
+		Skip:  0,
+		Data:  activityGroups,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"": result})
 }
 
-//GetPersonByID returns person with specific ID
-func GetPersonByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	key := vars["id"]
+// POST /tasks
+// Create new task
+func CreateTask(c *gin.Context) {
+	// Validate input
+	var input entity.CreateActivityGroupsInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	var person entity.Person
-	database.Connector.First(&person, key)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(person)
+	// Create task
+	activityGroups := entity.ActivityGroups{
+		Title:     input.Title,
+		Email:     input.Email,
+		Comment:   input.Comment,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	db := c.MustGet("db").(*gorm.DB)
+	db.Create(&activityGroups)
+
+	c.JSON(http.StatusOK, gin.H{"data": activityGroups})
 }
 
-//CreatePerson creates person
-func CreatePerson(w http.ResponseWriter, r *http.Request) {
-	requestBody, _ := ioutil.ReadAll(r.Body)
-	var person entity.Person
-	json.Unmarshal(requestBody, &person)
+// GET /tasks/:id
+// Find a task
+// func FindTask(c *gin.Context) { // Get model if exist
+// 	var task models.Task
 
-	database.Connector.Create(person)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(person)
-}
+// 	db := c.MustGet("db").(*gorm.DB)
+// 	if err := db.Where("id = ?", c.Param("id")).First(&task).Error; err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+// 		return
+// 	}
 
-//UpdatePersonByID updates person with respective ID
-func UpdatePersonByID(w http.ResponseWriter, r *http.Request) {
-	requestBody, _ := ioutil.ReadAll(r.Body)
-	var person entity.Person
-	json.Unmarshal(requestBody, &person)
-	database.Connector.Save(&person)
+// 	c.JSON(http.StatusOK, gin.H{"data": task})
+// }
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(person)
-}
+// PATCH /tasks/:id
+// Update a task
+// func UpdateTask(c *gin.Context) {
 
-//DeletPersonByID delete's person with specific ID
-func DeletPersonByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	key := vars["id"]
+// 	db := c.MustGet("db").(*gorm.DB)
+// 	// Get model if exist
+// 	var task models.Task
+// 	if err := db.Where("id = ?", c.Param("id")).First(&task).Error; err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+// 		return
+// 	}
 
-	var person entity.Person
-	id, _ := strconv.ParseInt(key, 10, 64)
-	database.Connector.Where("id = ?", id).Delete(&person)
-	w.WriteHeader(http.StatusNoContent)
-}
+// 	// Validate input
+// 	var input UpdateTaskInput
+// 	if err := c.ShouldBindJSON(&input); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	date := "2006-01-02"
+// 	deadline, _ := time.Parse(date, input.Deadline)
+
+// 	var updatedInput models.Task
+// 	updatedInput.Deadline = deadline
+// 	updatedInput.AssingedTo = input.AssingedTo
+// 	updatedInput.Task = input.Task
+
+// 	db.Model(&task).Updates(updatedInput)
+
+// 	c.JSON(http.StatusOK, gin.H{"data": task})
+// }
+
+// DELETE /tasks/:id
+// Delete a task
+// func DeleteTask(c *gin.Context) {
+// 	// Get model if exist
+// 	db := c.MustGet("db").(*gorm.DB)
+// 	var book models.Task
+// 	if err := db.Where("id = ?", c.Param("id")).First(&book).Error; err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+// 		return
+// 	}
+
+// 	db.Delete(&book)
+
+// 	c.JSON(http.StatusOK, gin.H{"data": true})
+// }
