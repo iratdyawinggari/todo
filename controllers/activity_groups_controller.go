@@ -23,7 +23,7 @@ func GetAllActivityGroups(c *gin.Context) {
 		Data:  activityGroups,
 	}
 
-	c.JSON(http.StatusOK, gin.H{"": result})
+	c.JSON(http.StatusOK, result)
 }
 
 // POST /tasks
@@ -48,67 +48,67 @@ func CreateTask(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	db.Create(&activityGroups)
 
-	c.JSON(http.StatusOK, gin.H{"data": activityGroups})
+	c.JSON(http.StatusOK, activityGroups)
 }
 
 // GET /tasks/:id
 // Find a task
-// func FindTask(c *gin.Context) { // Get model if exist
-// 	var task models.Task
+func GetActivityGroupsById(c *gin.Context) { // Get model if exist
+	var activityGroups entity.ActivityGroups
 
-// 	db := c.MustGet("db").(*gorm.DB)
-// 	if err := db.Where("id = ?", c.Param("id")).First(&task).Error; err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
-// 		return
-// 	}
+	db := c.MustGet("db").(*gorm.DB)
+	if err := db.Where("id = ?", c.Param("id")).First(&activityGroups).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{"data": task})
-// }
+	result := entity.ActivityGroupsDetailResponse{
+		ID:        activityGroups.ID,
+		Title:     activityGroups.Title,
+		CreatedAt: activityGroups.CreatedAt,
+		TodoItems: nil,
+	}
+	c.JSON(http.StatusOK, result)
+}
 
 // PATCH /tasks/:id
 // Update a task
-// func UpdateTask(c *gin.Context) {
+func UpdateActivityGroups(c *gin.Context) {
 
-// 	db := c.MustGet("db").(*gorm.DB)
-// 	// Get model if exist
-// 	var task models.Task
-// 	if err := db.Where("id = ?", c.Param("id")).First(&task).Error; err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
-// 		return
-// 	}
+	db := c.MustGet("db").(*gorm.DB)
+	// Get model if exist
+	var existingActivityGroups entity.ActivityGroups
+	if err := db.Where("id = ?", c.Param("id")).First(&existingActivityGroups).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
 
-// 	// Validate input
-// 	var input UpdateTaskInput
-// 	if err := c.ShouldBindJSON(&input); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	// Validate input
+	var input entity.UpdateActivityGroupsInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	date := "2006-01-02"
-// 	deadline, _ := time.Parse(date, input.Deadline)
+	var updatedInput entity.ActivityGroups
+	updatedInput.Title = input.Title
+	updatedInput.UpdatedAt = time.Now()
 
-// 	var updatedInput models.Task
-// 	updatedInput.Deadline = deadline
-// 	updatedInput.AssingedTo = input.AssingedTo
-// 	updatedInput.Task = input.Task
+	db.Model(&existingActivityGroups).Updates(updatedInput)
 
-// 	db.Model(&task).Updates(updatedInput)
+	c.JSON(http.StatusOK, existingActivityGroups)
+}
 
-// 	c.JSON(http.StatusOK, gin.H{"data": task})
-// }
+func DeleteActivityGroups(c *gin.Context) {
+	// Get model if exist
+	db := c.MustGet("db").(*gorm.DB)
+	var activityGroups entity.ActivityGroups
+	if err := db.Where("id = ?", c.Param("id")).First(&activityGroups).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
 
-// DELETE /tasks/:id
-// Delete a task
-// func DeleteTask(c *gin.Context) {
-// 	// Get model if exist
-// 	db := c.MustGet("db").(*gorm.DB)
-// 	var book models.Task
-// 	if err := db.Where("id = ?", c.Param("id")).First(&book).Error; err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
-// 		return
-// 	}
+	db.Delete(&activityGroups)
 
-// 	db.Delete(&book)
-
-// 	c.JSON(http.StatusOK, gin.H{"data": true})
-// }
+	c.JSON(http.StatusOK, gin.H{"data": true})
+}

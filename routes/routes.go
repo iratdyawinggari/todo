@@ -14,8 +14,9 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 	})
 	r.GET("/activity-groups", controllers.GetAllActivityGroups)
 	r.POST("/activity-groups", controllers.CreateTask)
-	// r.GET("/activity-groups/:id", controllers.FindTask)
-	// r.PATCH("/activity-groups/:id", controllers.UpdateTask)
-	// r.DELETE("activity-groups/:id", controllers.DeleteTask)
+	r.GET("/activity-groups/:id", controllers.GetActivityGroupsById)
+	r.PATCH("/activity-groups/:id", controllers.UpdateActivityGroups)
+	r.DELETE("activity-groups/:id", controllers.DeleteActivityGroups)
+
 	return r
 }

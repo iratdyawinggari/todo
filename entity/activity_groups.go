@@ -14,7 +14,7 @@ type ActivityGroups struct {
 type ActivityGroupsDetailResponse struct {
 	ID        int         `json:"id"`
 	Title     string      `json:"title"`
-	CreatedAt string      `json:"created_at"`
+	CreatedAt time.Time   `json:"created_at"`
 	TodoItems []TodoItems `json:todo_items,gorm:"foreignKey:ID;"`
 }
 
@@ -29,4 +29,8 @@ type CreateActivityGroupsInput struct {
 	Title   string `json:"title"`
 	Email   string `json:"email"`
 	Comment string `json:"_comment"`
+}
+
+type UpdateActivityGroupsInput struct {
+	Title string `json:"title"`
 }
