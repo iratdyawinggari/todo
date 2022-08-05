@@ -9,8 +9,6 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// GET /tasks
-// Get all tasks
 func GetAllTodoItems(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	var todoItems []entity.TodoItems
@@ -26,17 +24,13 @@ func GetAllTodoItems(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// POST /tasks
-// Create new task
 func CreateTodoItems(c *gin.Context) {
-	// Validate input
 	var input entity.TodoItems
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Create task
 	todoItems := entity.TodoItems{
 		Title:           input.Title,
 		Comment:         input.Comment,
@@ -51,9 +45,7 @@ func CreateTodoItems(c *gin.Context) {
 	c.JSON(http.StatusOK, todoItems)
 }
 
-// GET /tasks/:id
-// Find a task
-func GetTodoItemsById(c *gin.Context) { // Get model if exist
+func GetTodoItemsById(c *gin.Context) {
 	var todoItems entity.TodoItems
 
 	db := c.MustGet("db").(*gorm.DB)
@@ -71,19 +63,16 @@ func GetTodoItemsById(c *gin.Context) { // Get model if exist
 	c.JSON(http.StatusOK, result)
 }
 
-// PATCH /tasks/:id
-// Update a task
 func UpdateTodoItems(c *gin.Context) {
 
 	db := c.MustGet("db").(*gorm.DB)
-	// Get model if exist
+
 	var existingTodoItems entity.TodoItems
 	if err := db.Where("id = ?", c.Param("id")).First(&existingTodoItems).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
 
-	// Validate input
 	var input entity.UpdateTodotemsInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -103,7 +92,6 @@ func UpdateTodoItems(c *gin.Context) {
 }
 
 func DeleteTodoItems(c *gin.Context) {
-	// Get model if exist
 	db := c.MustGet("db").(*gorm.DB)
 	var todoItems entity.TodoItems
 	if err := db.Where("id = ?", c.Param("id")).First(&todoItems).Error; err != nil {

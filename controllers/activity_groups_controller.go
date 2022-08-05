@@ -9,8 +9,6 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// GET /tasks
-// Get all tasks
 func GetAllActivityGroups(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	var activityGroups []entity.ActivityGroups
@@ -26,17 +24,13 @@ func GetAllActivityGroups(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// POST /tasks
-// Create new task
 func CreateActivityGroups(c *gin.Context) {
-	// Validate input
 	var input entity.CreateActivityGroupsInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Create task
 	activityGroups := entity.ActivityGroups{
 		Title:     input.Title,
 		Email:     input.Email,
@@ -51,9 +45,7 @@ func CreateActivityGroups(c *gin.Context) {
 	c.JSON(http.StatusOK, activityGroups)
 }
 
-// GET /tasks/:id
-// Find a task
-func GetActivityGroupsById(c *gin.Context) { // Get model if exist
+func GetActivityGroupsById(c *gin.Context) {
 	var activityGroups entity.ActivityGroups
 
 	db := c.MustGet("db").(*gorm.DB)
@@ -71,19 +63,16 @@ func GetActivityGroupsById(c *gin.Context) { // Get model if exist
 	c.JSON(http.StatusOK, result)
 }
 
-// PATCH /tasks/:id
-// Update a task
 func UpdateActivityGroups(c *gin.Context) {
 
 	db := c.MustGet("db").(*gorm.DB)
-	// Get model if exist
+
 	var existingActivityGroups entity.ActivityGroups
 	if err := db.Where("id = ?", c.Param("id")).First(&existingActivityGroups).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
 
-	// Validate input
 	var input entity.UpdateActivityGroupsInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -100,7 +89,6 @@ func UpdateActivityGroups(c *gin.Context) {
 }
 
 func DeleteActivityGroups(c *gin.Context) {
-	// Get model if exist
 	db := c.MustGet("db").(*gorm.DB)
 	var activityGroups entity.ActivityGroups
 	if err := db.Where("id = ?", c.Param("id")).First(&activityGroups).Error; err != nil {
