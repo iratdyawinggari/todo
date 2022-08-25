@@ -13,8 +13,6 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 		c.Set("db", db)
 	})
 
-	r.Run(":3030")
-
 	r.GET("/activity-groups", controllers.GetAllActivityGroups)
 	r.POST("/activity-groups", controllers.CreateActivityGroups)
 	r.GET("/activity-groups/:id", controllers.GetActivityGroupsById)
