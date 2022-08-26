@@ -9,6 +9,7 @@ type ActivityGroups struct {
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"json:"updated_at"`
 	Email     string    `json:"email"`
 	Comment   string    `json:"_comment"`
+	TodoItem  []TodoItems `gorm:"ForeignKey:ActivityGroupId"` 	
 }
 
 type ActivityGroupsDetailResponse struct {

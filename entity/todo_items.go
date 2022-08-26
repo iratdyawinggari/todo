@@ -10,7 +10,7 @@ type TodoItems struct {
 	Comment         string    `json:"_comment"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
-	ActivityGroupId string    `gorm:"foreignKey:CompanyRefer json:"activity_group_id"`
+	ActivityGroupId int    `json:"activity_group_id"`
 }
 
 type TodoItemsListResponse struct {

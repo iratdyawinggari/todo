@@ -59,7 +59,9 @@ func GetTodoItemsById(c *gin.Context) {
 		Title:    todoItems.Title,
 		IsActive: todoItems.IsActive,
 		Priority: todoItems.Priority,
+		ActivityGroupId: todoItems.ActivityGroupId,
 	}
+
 	c.JSON(http.StatusOK, result)
 }
 
@@ -101,5 +103,5 @@ func DeleteTodoItems(c *gin.Context) {
 
 	db.Delete(&todoItems)
 
-	c.JSON(http.StatusOK, nil)
+	c.JSON(http.StatusOK, gin.H{"data": true})
 }
